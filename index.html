@@ -560,6 +560,7 @@
                   class="room-map-svg"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 1200 1200"
+                  preserveAspectRatio="xMidYMin meet"
                   role="img"
                   aria-labelledby="mapTitle mapDesc"
                 >
@@ -857,25 +858,45 @@
       state.panzoom.zoom(next, { animate: true });
     }
 
+    function svgPointToViewportPixels(x, y) {
+      const viewportRect = dom.mapViewport.getBoundingClientRect();
+      const viewBox = dom.roomMapSvg.viewBox.baseVal;
+
+      // The SVG is square, but the viewport may not be. With preserveAspectRatio="xMidYMin meet",
+      // the SVG is scaled to fit and horizontally centred. This converts SVG units into the
+      // untransformed pixel coordinate system that Panzoom uses.
+      const baseScale = Math.min(
+        viewportRect.width / viewBox.width,
+        viewportRect.height / viewBox.height
+      );
+
+      const renderedWidth = viewBox.width * baseScale;
+      const renderedHeight = viewBox.height * baseScale;
+
+      const offsetX = (viewportRect.width - renderedWidth) / 2;
+      const offsetY = 0; // yMin alignment keeps the stage/top of the room at the top
+
+      return {
+        x: offsetX + ((x - viewBox.x) * baseScale),
+        y: offsetY + ((y - viewBox.y) * baseScale)
+      };
+    }
+
     function zoomToTable(table) {
       if (!state.panzoom) return;
       const pos = getTablePosition(table);
       if (!pos) return;
 
       const viewportRect = dom.mapViewport.getBoundingClientRect();
-      const svgRect = dom.roomMapSvg.getBoundingClientRect();
-      const viewBox = dom.roomMapSvg.viewBox.baseVal;
-
-      // Convert SVG coordinate to rendered pixel coordinate inside current SVG.
-      const px = ((pos.x - viewBox.x) / viewBox.width) * svgRect.width;
-      const py = ((pos.y - viewBox.y) / viewBox.height) * svgRect.height;
-
+      const point = svgPointToViewportPixels(pos.x, pos.y);
       const targetScale = 2.8;
+
+      // Set zoom first, then pan so the selected table sits in the middle of the map viewport.
       state.panzoom.zoom(targetScale, { animate: true });
 
       window.setTimeout(() => {
-        const x = (viewportRect.width / 2) - (px * targetScale);
-        const y = (viewportRect.height / 2) - (py * targetScale);
+        const x = (viewportRect.width / 2) - (point.x * targetScale);
+        const y = (viewportRect.height / 2) - (point.y * targetScale);
         state.panzoom.pan(x, y, { animate: true });
       }, 80);
     }

@@ -905,8 +905,11 @@
         const point = svgPointToViewportPixels(pos.x, pos.y);
         const targetScale = 2.8;
 
-        const targetX = (viewportRect.width / 2) - (point.x * targetScale);
-        const targetY = (viewportRect.height / 2) - (point.y * targetScale);
+        // Panzoom applies transforms as scale(...) translate(...), so the
+        // translate values are themselves affected by the scale. Divide the
+        // desired screen-space offset by the target scale to avoid over-panning.
+        const targetX = (viewportRect.width / (2 * targetScale)) - point.x;
+        const targetY = (viewportRect.height / (2 * targetScale)) - point.y;
 
         // Set zoom and pan without animation so the final position is exact.
         // A CSS transition can be reintroduced later if desired, but precision

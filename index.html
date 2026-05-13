@@ -835,9 +835,10 @@
         startScale: 1,
         startX: 0,
         startY: 0,
-        contain: "outside",
-        canvas: true,
-        touchAction: "none"
+        contain: false,
+        canvas: false,
+        touchAction: "none",
+        animate: false
       });
 
       dom.mapViewport.addEventListener("wheel", state.panzoom.zoomWithWheel);
@@ -852,12 +853,10 @@
     function resetMapView() {
       if (!state.panzoom) return;
 
-      // Return to the exact natural starting position: full map visible,
-      // no pan offset, no extra zoom. This is more reliable than Panzoom's
-      // reset() here because reset() can interact oddly with animated zooms
-      // and preserveAspectRatio on an SVG.
-      state.panzoom.zoom(1, { animate: true });
-      state.panzoom.pan(0, 0, { animate: true });
+      // Avoid Panzoom's animated reset here. Animated pan/zoom can leave the
+      // internal state out of sync after user gestures, especially on SVGs.
+      state.panzoom.zoom(1, { animate: false });
+      state.panzoom.pan(0, 0, { animate: false, relative: false });
     }
 
     function zoomMapBy(multiplier) {
@@ -896,18 +895,25 @@
       const pos = getTablePosition(table);
       if (!pos) return;
 
-      const viewportRect = dom.mapViewport.getBoundingClientRect();
-      const point = svgPointToViewportPixels(pos.x, pos.y);
-      const targetScale = 2.8;
-
-      // Set zoom first, then pan so the selected table sits in the middle of the map viewport.
-      state.panzoom.zoom(targetScale, { animate: true });
+      // Always start from the exact home position before calculating the new view.
+      // This makes search-result zooming deterministic regardless of the user's
+      // previous manual zoom/pan state.
+      resetMapView();
 
       window.setTimeout(() => {
-        const x = (viewportRect.width / 2) - (point.x * targetScale);
-        const y = (viewportRect.height / 2) - (point.y * targetScale);
-        state.panzoom.pan(x, y, { animate: true });
-      }, 80);
+        const viewportRect = dom.mapViewport.getBoundingClientRect();
+        const point = svgPointToViewportPixels(pos.x, pos.y);
+        const targetScale = 2.8;
+
+        const targetX = (viewportRect.width / 2) - (point.x * targetScale);
+        const targetY = (viewportRect.height / 2) - (point.y * targetScale);
+
+        // Set zoom and pan without animation so the final position is exact.
+        // A CSS transition can be reintroduced later if desired, but precision
+        // matters more than motion for this lookup tool.
+        state.panzoom.zoom(targetScale, { animate: false });
+        state.panzoom.pan(targetX, targetY, { animate: false, relative: false });
+      }, 20);
     }
 
     async function loadCsv() {

@@ -891,32 +891,39 @@
     }
 
     function zoomToTable(table) {
-      if (!state.panzoom) return;
       const pos = getTablePosition(table);
       if (!pos) return;
 
-      // Always start from the exact home position before calculating the new view.
-      // This makes search-result zooming deterministic regardless of the user's
-      // previous manual zoom/pan state.
-      resetMapView();
+      // Clear any manual pan/zoom first so this always behaves predictably.
+      if (state.panzoom) {
+        state.panzoom.zoom(1, { animate: false });
+        state.panzoom.pan(0, 0, { animate: false, relative: false });
+      }
 
-      window.setTimeout(() => {
-        const viewportRect = dom.mapViewport.getBoundingClientRect();
-        const point = svgPointToViewportPixels(pos.x, pos.y);
-        const targetScale = 2.8;
+      // Instead of asking Panzoom to calculate a target pan, change the SVG viewBox.
+      // This is much more reliable: we are literally cropping the SVG around the
+      // selected table, while leaving Panzoom ready for the user to pinch/drag after.
+      const viewportRect = dom.mapViewport.getBoundingClientRect();
+      const viewportAspect = viewportRect.width / viewportRect.height;
 
-        // Panzoom applies transforms as scale(...) translate(...), so the
-        // translate values are themselves affected by the scale. Divide the
-        // desired screen-space offset by the target scale to avoid over-panning.
-        const targetX = (viewportRect.width / (2 * targetScale)) - point.x;
-        const targetY = (viewportRect.height / (2 * targetScale)) - point.y;
+      const zoomLevel = 2.8;
+      let viewWidth = DEFAULT_VIEWBOX.width / zoomLevel;
+      let viewHeight = viewWidth / viewportAspect;
 
-        // Set zoom and pan without animation so the final position is exact.
-        // A CSS transition can be reintroduced later if desired, but precision
-        // matters more than motion for this lookup tool.
-        state.panzoom.zoom(targetScale, { animate: false });
-        state.panzoom.pan(targetX, targetY, { animate: false, relative: false });
-      }, 20);
+      // Safety for unusually narrow/tall screens.
+      if (viewHeight > DEFAULT_VIEWBOX.height) {
+        viewHeight = DEFAULT_VIEWBOX.height / zoomLevel;
+        viewWidth = viewHeight * viewportAspect;
+      }
+
+      let viewX = pos.x - (viewWidth / 2);
+      let viewY = pos.y - (viewHeight / 2);
+
+      // Clamp so the viewBox never moves outside the room/map bounds.
+      viewX = Math.max(DEFAULT_VIEWBOX.x, Math.min(viewX, DEFAULT_VIEWBOX.width - viewWidth));
+      viewY = Math.max(DEFAULT_VIEWBOX.y, Math.min(viewY, DEFAULT_VIEWBOX.height - viewHeight));
+
+      setMapViewBox(viewX, viewY, viewWidth, viewHeight);
     }
 
     async function loadCsv() {

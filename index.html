@@ -831,8 +831,10 @@
 
       state.panzoom = Panzoom(dom.mapPanzoom, {
         maxScale: 5,
-        minScale: 0.65,
-        startScale: 0.92,
+        minScale: 1,
+        startScale: 1,
+        startX: 0,
+        startY: 0,
         contain: "outside",
         canvas: true,
         touchAction: "none"
@@ -840,17 +842,22 @@
 
       dom.mapViewport.addEventListener("wheel", state.panzoom.zoomWithWheel);
 
-      // Fit map reasonably once layout has settled.
+      // Mark ready once layout has settled. Do not apply an initial transform:
+      // the SVG already fits the viewport correctly at its natural 1:1 state.
       window.setTimeout(() => {
-        resetMapView();
         state.mapReady = true;
       }, 50);
     }
 
     function resetMapView() {
       if (!state.panzoom) return;
-      state.panzoom.reset({ animate: true });
-      state.panzoom.zoom(0.92, { animate: true });
+
+      // Return to the exact natural starting position: full map visible,
+      // no pan offset, no extra zoom. This is more reliable than Panzoom's
+      // reset() here because reset() can interact oddly with animated zooms
+      // and preserveAspectRatio on an SVG.
+      state.panzoom.zoom(1, { animate: true });
+      state.panzoom.pan(0, 0, { animate: true });
     }
 
     function zoomMapBy(multiplier) {

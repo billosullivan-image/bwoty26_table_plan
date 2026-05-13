@@ -10,14 +10,16 @@
 
   <style>
     :root {
-      --bg: #000000;
-      --bg-elevated: #111111;
+      --bg: #080834;
+      --bg-elevated: #10103f;
+      --bg-soft: #121247;
+      --bg-panel: #0c0c3a;
       --text: #ffffff;
       --text-muted: #cccccc;
       --gold: #e6ca88;
-      --orange: #e65024;
-      --navy: #09091d;
-      --border-subtle: #333333;
+      --orange: #db5127;
+      --navy: #080834;
+      --border-subtle: #24245a;
       --radius-lg: 16px;
       --radius-pill: 999px;
     }
@@ -77,12 +79,12 @@
     }
 
     .card {
-      background: radial-gradient(circle at top left, #1f1f1f 0, #050505 55%, #000000 100%);
+      background: radial-gradient(circle at top left, #151556 0, #0c0c3a 55%, #080834 100%);
       border-radius: 24px;
       padding: 14px;
       border: 1px solid var(--border-subtle);
       box-shadow:
-        0 18px 40px rgba(0, 0, 0, 0.8),
+        0 18px 40px rgba(2, 2, 24, 0.72),
         0 0 0 1px rgba(255, 255, 255, 0.02);
     }
 
@@ -117,7 +119,7 @@
     }
 
     .mode-toggle button.active {
-      background: #db5127;
+      background: var(--orange);
       color: #ffffff;
       transform: translateY(-0.5px);
     }
@@ -148,7 +150,7 @@
       width: 100%;
       border-radius: 999px;
       border: 1px solid rgba(255, 255, 255, 0.45);
-      background: rgba(5, 5, 5, 0.9);
+      background: rgba(8, 8, 52, 0.92);
       color: var(--text);
       padding: 10px 14px;
       padding-right: 42px;
@@ -251,7 +253,7 @@
       font-weight: 800;
       letter-spacing: 0.16em;
       text-transform: uppercase;
-      color: #db5127;
+      color: var(--orange);
     }
 
     .table-link {
@@ -259,7 +261,7 @@
       border: none;
       padding: 0;
       margin: 0;
-      color: #db5127;
+      color: var(--orange);
       cursor: pointer;
       font: inherit;
       text-align: left;
@@ -318,7 +320,7 @@
     .map-shell {
       border-radius: 18px;
       overflow: hidden;
-      background: #070716;
+      background: #0c0c3a;
       border: 1px solid rgba(255, 255, 255, 0.16);
       box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
     }
@@ -331,7 +333,7 @@
       min-height: 420px;
       overflow: hidden;
       touch-action: none; /* critical for Panzoom on touch */
-      background: radial-gradient(circle at center, #17172b 0, #080817 72%, #050510 100%);
+      background: radial-gradient(circle at center, #151556 0, #0c0c3a 72%, #080834 100%);
     }
 
     .map-panzoom {
@@ -360,7 +362,7 @@
     }
 
     .stage-text {
-      fill: #111111;
+      fill: #080834;
       font-size: 34px;
       font-weight: 800;
       letter-spacing: 0.06em;
@@ -387,7 +389,7 @@
     }
 
     .map-table .table-label {
-      fill: #151515;
+      fill: #080834;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
       font-size: 26px;
       font-weight: 800;
@@ -430,7 +432,7 @@
     .map-controls button {
       border: 1px solid rgba(255, 255, 255, 0.24);
       color: var(--text);
-      background: rgba(0, 0, 0, 0.35);
+      background: rgba(8, 8, 52, 0.72);
       border-radius: 999px;
       padding: 7px 12px;
       font-size: 0.8rem;
@@ -473,7 +475,7 @@
       <header>
         <!-- Replace this with the final Businesswoman logo URL/file path when ready -->
         <img
-          src="https://www.image.ie/wp-content/uploads/2026/05/BWOTY26_Logo.webp"
+          src="https://www.image.ie/wp-content/uploads/2025/11/BOB2025-Logo.png"
           alt="IMAGE PwC Businesswoman of the Year Awards 2026 Logo"
           class="top-logo"
         />
@@ -567,7 +569,7 @@
                   <title id="mapTitle">Room layout with numbered tables</title>
                   <desc id="mapDesc">Tables 1 to 115 arranged below the stage with two aisles and larger spacing between table blocks.</desc>
 
-                  <rect x="0" y="0" width="1200" height="1200" fill="#080817" />
+                  <rect x="0" y="0" width="1200" height="1200" fill="#080834" />
                   <rect class="stage-block" x="60" y="0" width="1080" height="90" />
                   <text class="stage-text" x="600" y="48" text-anchor="middle">STAGE</text>
 

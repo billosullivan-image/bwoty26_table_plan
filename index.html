@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>IMAGE PwC Businesswoman of the Year Awards 2026 - Table Plan Lookup</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Panzoom: free MIT library. Used for pinch-zoom / pan on the SVG map. -->
+  <script src="https://unpkg.com/@panzoom/panzoom@4.6.0/dist/panzoom.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #000000;
+      --bg-elevated: #111111;
+      --text: #ffffff;
+      --text-muted: #cccccc;
+      --gold: #e6ca88;
+      --orange: #e65024;
+      --navy: #09091d;
+      --border-subtle: #333333;
+      --radius-lg: 16px;
+      --radius-pill: 999px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page {
+      min-height: 100vh;
+      display: block;
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 760px;
+      padding: 16px;
+      padding-bottom: 32px;
+      margin: 0 auto;
+    }
+
+    .top-logo {
+      display: block;
+      margin: 0 auto;
+      max-width: 56%;
+      width: 48%;
+      height: auto;
+      padding-bottom: 16px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      margin: 0 0 4px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    header p {
+      margin: 0;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .card {
+      background: radial-gradient(circle at top left, #1f1f1f 0, #050505 55%, #000000 100%);
+      border-radius: 24px;
+      padding: 14px;
+      border: 1px solid var(--border-subtle);
+      box-shadow:
+        0 18px 40px rgba(0, 0, 0, 0.8),
+        0 0 0 1px rgba(255, 255, 255, 0.02);
+    }
+
+    .mode-toggle-wrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mode-toggle {
+      display: inline-flex;
+      border-radius: var(--radius-pill);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 3px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      width: 100%;
+    }
+
+    .mode-toggle button {
+      flex: 1 1 0;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      padding: 7px 12px;
+      font-size: 16px; /* avoids iOS zoom */
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.18s ease, color 0.18s ease, transform 0.1s ease;
+      font-weight: 650;
+    }
+
+    .mode-toggle button.active {
+      background: var(--gold);
+      color: #000;
+      transform: translateY(-0.5px);
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 14px;
+      margin-bottom: 14px;
+    }
+
+    .field {
+      position: relative;
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      background: rgba(5, 5, 5, 0.9);
+      color: var(--text);
+      padding: 10px 14px;
+      padding-right: 42px;
+      font-size: 16px;
+      line-height: 1.3;
+      outline: none;
+      appearance: none;
+      margin-bottom: 6px;
+    }
+
+    .field input::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .input-shell {
+      position: relative;
+    }
+
+    .clear-btn {
+      position: absolute;
+      right: 14px;
+      top: 0;
+      bottom: 0;
+      margin: auto 0;
+      transform: translateY(-2px);
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      border: none;
+      background: rgba(255, 255, 255, 0.45);
+      color: #000000;
+      font-size: 0.9rem;
+      line-height: 1;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .clear-btn:focus-visible {
+      outline: 2px solid #ffffff;
+      outline-offset: 2px;
+    }
+
+    .hint {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: flex-end;
+      align-items: baseline;
+      margin-top: 10px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .results {
+      margin-top: 12px;
+      border-top: none;
+      padding-top: 0;
+      max-height: none;
+      overflow: visible;
+    }
+
+    .result-item {
+      padding: 11px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .result-item:first-child {
+      border-top: none;
+      padding-top: 10px;
+    }
+
+    .result-item:last-child {
+      border-bottom: none;
+    }
+
+    .result-name {
+      font-weight: 750;
+      font-size: 1.125rem;
+      letter-spacing: 0.02em;
+    }
+
+    .result-company {
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    .result-table {
+      margin-top: 6px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    .table-link {
+      background: none;
+      border: none;
+      padding: 0;
+      margin: 0;
+      color: var(--gold);
+      cursor: pointer;
+      font: inherit;
+      text-align: left;
+    }
+
+    .table-link:hover,
+    .table-link:focus {
+      text-decoration: underline;
+      outline: none;
+    }
+
+    .empty-state {
+      padding: 16px 2px 6px;
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      text-align: left;
+    }
+
+    .error-state {
+      padding: 10px 0 0;
+      font-size: 0.8rem;
+      color: #ffb3b3;
+    }
+
+    .search-tip {
+      margin-top: 8px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* MAP STYLES */
+
+    .room-map-wrapper {
+      margin-top: 18px;
+      border-top: none;
+      padding-top: 0;
+    }
+
+    .map-title {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+      margin: 0 0 10px;
+      text-align: center;
+    }
+
+    .map-help {
+      margin: 0 0 10px;
+      color: var(--text-muted);
+      text-align: center;
+      font-size: 0.78rem;
+      line-height: 1.35;
+    }
+
+    .map-shell {
+      border-radius: 18px;
+      overflow: hidden;
+      background: #070716;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+    }
+
+    .map-viewport {
+      position: relative;
+      width: 100%;
+      height: 520px;
+      max-height: 68vh;
+      min-height: 420px;
+      overflow: hidden;
+      touch-action: none; /* critical for Panzoom on touch */
+      background: radial-gradient(circle at center, #17172b 0, #080817 72%, #050510 100%);
+    }
+
+    .map-panzoom {
+      width: 100%;
+      height: 100%;
+      transform-origin: 0 0;
+      touch-action: none;
+      cursor: grab;
+    }
+
+    .map-panzoom:active {
+      cursor: grabbing;
+    }
+
+    .room-map-svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .stage-block {
+      fill: #f4f0e6;
+    }
+
+    .stage-text {
+      fill: #111111;
+      font-size: 34px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+    }
+
+    .map-table {
+      cursor: pointer;
+      transition: opacity 0.18s ease;
+    }
+
+    .map-table .hit-area {
+      fill: transparent;
+      pointer-events: all;
+    }
+
+    .map-table .table-circle {
+      fill: #ffffff;
+      stroke: rgba(255, 255, 255, 0.9);
+      stroke-width: 2;
+      transition: fill 0.18s ease, stroke 0.18s ease, stroke-width 0.18s ease, transform 0.18s ease;
+      transform-box: fill-box;
+      transform-origin: 50% 50%;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.35));
+    }
+
+    .map-table .table-label {
+      fill: #151515;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      text-anchor: middle;
+      dominant-baseline: central;
+      pointer-events: none;
+    }
+
+    .map-table.active .table-circle {
+      fill: var(--orange);
+      stroke: #ffffff;
+      stroke-width: 4;
+      transform: scale(1.08);
+    }
+
+    .map-table.active .table-label {
+      fill: #ffffff;
+    }
+
+    .map-table:hover .table-circle {
+      stroke-width: 4;
+    }
+
+    .table-summary {
+      margin: 10px 0 0;
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .map-controls {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .map-controls button {
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      color: var(--text);
+      background: rgba(0, 0, 0, 0.35);
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+    }
+
+    .map-controls button:active {
+      transform: translateY(1px);
+    }
+
+    @media (min-width: 640px) {
+      header h1 {
+        font-size: 1.7rem;
+      }
+
+      .card {
+        padding: 18px 18px 20px;
+      }
+
+      .controls {
+        flex-direction: row;
+        align-items: flex-end;
+      }
+
+      .controls .field {
+        flex: 1 1 auto;
+      }
+
+      .map-viewport {
+        height: 600px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="shell">
+      <header>
+        <!-- Replace this with the final Businesswoman logo URL/file path when ready -->
+        <img
+          src="https://www.image.ie/wp-content/uploads/2025/11/BOB2025-Logo.png"
+          alt="IMAGE PwC Businesswoman of the Year Awards 2026 Logo"
+          class="top-logo"
+        />
+        <h1>Table Plan Lookup</h1>
+        <p>Search the table plan by name, company, or table.</p>
+      </header>
+
+      <main class="card" aria-label="Guest search and table browser">
+        <div class="mode-toggle-wrap">
+          <div class="mode-toggle" role="tablist" aria-label="Search mode">
+            <button
+              id="mode-search"
+              class="active"
+              role="tab"
+              aria-selected="true"
+              aria-controls="panel-search"
+              type="button"
+            >
+              Search by name / company
+            </button>
+            <button
+              id="mode-table"
+              role="tab"
+              aria-selected="false"
+              aria-controls="panel-table"
+              type="button"
+            >
+              Browse by table
+            </button>
+          </div>
+        </div>
+
+        <section class="controls" aria-live="polite">
+          <div class="field" id="panel-search">
+            <label for="searchInput">Search guests</label>
+            <div class="input-shell">
+              <input
+                id="searchInput"
+                type="text"
+                placeholder="Type first name, last name, or company…"
+                autocomplete="off"
+              />
+              <button
+                type="button"
+                id="clearSearch"
+                class="clear-btn"
+                aria-label="Clear search"
+              >
+                ×
+              </button>
+            </div>
+            <p class="hint">Search ignores case and punctuation such as apostrophes.</p>
+          </div>
+
+          <div class="field" id="panel-table" style="display:none;">
+            <label for="tableSelect">Table number</label>
+            <select id="tableSelect">
+              <option value="">All tables</option>
+            </select>
+            <p class="hint">Browse by assigned table.</p>
+          </div>
+        </section>
+
+        <div class="summary-row" id="summaryRow" aria-live="polite">
+          <span id="activeFilter"></span>
+        </div>
+
+        <div class="error-state" id="errorMessage" role="alert" style="display:none;"></div>
+
+        <section
+          class="room-map-wrapper"
+          id="roomMapWrapper"
+          aria-label="Room layout"
+          style="display:none;"
+        >
+          <h2 class="map-title">Table location</h2>
+          <p class="map-help">Pinch to zoom, drag to move around the room, or tap a table to view its guests.</p>
+
+          <div class="map-shell">
+            <div class="map-viewport" id="mapViewport">
+              <div class="map-panzoom" id="mapPanzoom">
+                <svg
+                  id="roomMapSvg"
+                  class="room-map-svg"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 1200 1200"
+                  role="img"
+                  aria-labelledby="mapTitle mapDesc"
+                >
+                  <title id="mapTitle">Room layout with numbered tables</title>
+                  <desc id="mapDesc">Tables 1 to 115 arranged below the stage with two aisles and larger spacing between table blocks.</desc>
+
+                  <rect x="0" y="0" width="1200" height="1200" fill="#080817" />
+                  <rect class="stage-block" x="60" y="0" width="1080" height="90" />
+                  <text class="stage-text" x="600" y="48" text-anchor="middle">STAGE</text>
+
+                  <g id="tablesLayer"></g>
+                </svg>
+              </div>
+            </div>
+
+            <div class="map-controls">
+              <button type="button" id="zoomOutBtn" aria-label="Zoom out">−</button>
+              <button type="button" id="resetMapBtn">Reset map</button>
+              <button type="button" id="zoomInBtn" aria-label="Zoom in">+</button>
+            </div>
+          </div>
+
+          <p id="tableSummary" class="table-summary"></p>
+        </section>
+
+        <section class="results" id="results" aria-live="polite" aria-label="Guest results list"></section>
+
+        <p id="searchTip" class="search-tip" style="display:none;">
+          TIP: Tap the table number to see where it is in the room.
+        </p>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const ENABLE_PANZOOM = true;
+
+    const CSV_HEADERS = {
+      FIRST_NAMES: "First Names",
+      LAST_NAME: "Last Name",
+      COMPANY: "Company",
+      TABLE: "Table"
+    };
+
+    const state = {
+      guests: [],
+      mode: "search",
+      searchTerm: "",
+      selectedTable: "",
+      loaded: false,
+      tableCounts: {},
+      panzoom: null,
+      mapReady: false,
+      pointerMoved: false,
+      pointerStart: null
+    };
+
+    const dom = {};
+
+    // Accurate flat map based on the supplied room diagram.
+    // Stage is at the top. Two vertical aisles are preserved between x clusters.
+    // Larger vertical gaps are preserved after row 5 and row 7.
+    const TABLE_POSITIONS = [
+      // Row 1
+      [1, 110, 180], [2, 195, 180], [3, 280, 180],
+      [4, 440, 180], [5, 525, 180], [6, 610, 180], [7, 695, 180], [8, 780, 180],
+      [9, 940, 180], [10, 1025, 180], [11, 1110, 180],
+
+      // Row 2
+      [22, 110, 265], [21, 195, 265], [20, 280, 265],
+      [19, 440, 265], [18, 525, 265], [17, 610, 265], [16, 695, 265], [15, 780, 265],
+      [14, 940, 265], [13, 1025, 265], [12, 1110, 265],
+
+      // Row 3
+      [23, 110, 350], [24, 195, 350], [25, 280, 350],
+      [26, 440, 350], [27, 525, 350], [28, 610, 350], [29, 695, 350], [30, 780, 350],
+      [31, 940, 350], [32, 1025, 350], [33, 1110, 350],
+
+      // Row 4
+      [44, 110, 435], [43, 195, 435], [42, 280, 435],
+      [41, 440, 435], [40, 525, 435], [39, 610, 435], [38, 695, 435], [37, 780, 435],
+      [36, 940, 435], [35, 1025, 435], [34, 1110, 435],
+
+      // Row 5
+      [45, 110, 520], [46, 195, 520], [47, 280, 520],
+      [48, 440, 520], [49, 525, 520], [50, 610, 520], [51, 695, 520], [52, 780, 520],
+      [53, 940, 520], [54, 1025, 520], [55, 1110, 520],
+
+      // Larger gap after row 5
+      // Row 6
+      [64, 150, 660], [63, 235, 660],
+      [62, 440, 660], [61, 525, 660], [60, 610, 660], [59, 695, 660], [58, 780, 660],
+      [57, 980, 660], [56, 1065, 660],
+
+      // Row 7
+      [65, 110, 745], [66, 195, 745], [67, 280, 745],
+      [68, 440, 745], [69, 525, 745], [70, 610, 745], [71, 695, 745], [72, 780, 745],
+      [73, 940, 745], [74, 1025, 745], [75, 1110, 745],
+
+      // Larger gap after row 7
+      // Row 8
+      [86, 175, 890], [85, 260, 890], [84, 345, 890], [83, 430, 890], [82, 515, 890], [81, 600, 890], [80, 685, 890], [79, 770, 890], [78, 855, 890], [77, 940, 890], [76, 1025, 890],
+
+      // Row 9
+      [87, 175, 975], [88, 260, 975], [89, 345, 975], [90, 430, 975], [91, 515, 975], [92, 600, 975], [93, 685, 975], [94, 770, 975], [95, 855, 975], [96, 940, 975], [97, 1025, 975],
+
+      // Row 10
+      [108, 175, 1060], [107, 260, 1060], [106, 345, 1060], [105, 430, 1060], [104, 515, 1060], [103, 600, 1060], [102, 685, 1060], [101, 770, 1060], [100, 855, 1060], [99, 940, 1060], [98, 1025, 1060],
+
+      // Row 11
+      [109, 345, 1145], [110, 430, 1145], [111, 515, 1145], [112, 600, 1145], [113, 685, 1145], [114, 770, 1145], [115, 855, 1145]
+    ];
+
+    document.addEventListener("DOMContentLoaded", () => {
+      cacheDom();
+      renderMapTables();
+      bindEvents();
+      initPanzoom();
+      loadCsv();
+    });
+
+    function cacheDom() {
+      dom.modeSearchBtn = document.getElementById("mode-search");
+      dom.modeTableBtn = document.getElementById("mode-table");
+      dom.searchPanel = document.getElementById("panel-search");
+      dom.tablePanel = document.getElementById("panel-table");
+      dom.searchInput = document.getElementById("searchInput");
+      dom.tableSelect = document.getElementById("tableSelect");
+      dom.results = document.getElementById("results");
+      dom.errorMessage = document.getElementById("errorMessage");
+      dom.activeFilter = document.getElementById("activeFilter");
+      dom.clearSearchBtn = document.getElementById("clearSearch");
+      dom.roomMapWrapper = document.getElementById("roomMapWrapper");
+      dom.tableSummary = document.getElementById("tableSummary");
+      dom.searchTip = document.getElementById("searchTip");
+      dom.tablesLayer = document.getElementById("tablesLayer");
+      dom.mapViewport = document.getElementById("mapViewport");
+      dom.mapPanzoom = document.getElementById("mapPanzoom");
+      dom.roomMapSvg = document.getElementById("roomMapSvg");
+      dom.resetMapBtn = document.getElementById("resetMapBtn");
+      dom.zoomInBtn = document.getElementById("zoomInBtn");
+      dom.zoomOutBtn = document.getElementById("zoomOutBtn");
+    }
+
+    function renderMapTables() {
+      const NS = "http://www.w3.org/2000/svg";
+      dom.tablesLayer.innerHTML = "";
+
+      TABLE_POSITIONS.forEach(([table, x, y]) => {
+        const g = document.createElementNS(NS, "g");
+        g.classList.add("map-table");
+        g.setAttribute("data-table", String(table));
+        g.setAttribute("transform", `translate(${x} ${y})`);
+        g.setAttribute("role", "button");
+        g.setAttribute("tabindex", "0");
+        g.setAttribute("aria-label", `Table ${table}`);
+
+        const hit = document.createElementNS(NS, "circle");
+        hit.classList.add("hit-area");
+        hit.setAttribute("r", "40");
+        hit.setAttribute("cx", "0");
+        hit.setAttribute("cy", "0");
+
+        const circle = document.createElementNS(NS, "circle");
+        circle.classList.add("table-circle");
+        circle.setAttribute("r", "34");
+        circle.setAttribute("cx", "0");
+        circle.setAttribute("cy", "0");
+
+        const text = document.createElementNS(NS, "text");
+        text.classList.add("table-label");
+        text.setAttribute("x", "0");
+        text.setAttribute("y", "2");
+        text.textContent = table;
+
+        g.appendChild(hit);
+        g.appendChild(circle);
+        g.appendChild(text);
+        dom.tablesLayer.appendChild(g);
+      });
+
+      dom.mapTables = document.querySelectorAll(".map-table");
+    }
+
+    function bindEvents() {
+      dom.modeSearchBtn.addEventListener("click", () => setMode("search"));
+      dom.modeTableBtn.addEventListener("click", () => setMode("table"));
+
+      dom.searchInput.addEventListener("input", () => {
+        state.searchTerm = dom.searchInput.value;
+        render();
+      });
+
+      dom.tableSelect.addEventListener("change", () => {
+        state.selectedTable = dom.tableSelect.value;
+        render();
+      });
+
+      if (dom.clearSearchBtn) {
+        dom.clearSearchBtn.addEventListener("click", () => {
+          state.searchTerm = "";
+          dom.searchInput.value = "";
+          render();
+          dom.searchInput.focus();
+        });
+      }
+
+      if (dom.resetMapBtn) {
+        dom.resetMapBtn.addEventListener("click", resetMapView);
+      }
+      if (dom.zoomInBtn) {
+        dom.zoomInBtn.addEventListener("click", () => zoomMapBy(1.25));
+      }
+      if (dom.zoomOutBtn) {
+        dom.zoomOutBtn.addEventListener("click", () => zoomMapBy(0.8));
+      }
+
+      // Used to distinguish a deliberate table tap from a drag/pan.
+      dom.mapViewport.addEventListener("pointerdown", (event) => {
+        state.pointerMoved = false;
+        state.pointerStart = { x: event.clientX, y: event.clientY };
+      });
+
+      dom.mapViewport.addEventListener("pointermove", (event) => {
+        if (!state.pointerStart) return;
+        const dx = Math.abs(event.clientX - state.pointerStart.x);
+        const dy = Math.abs(event.clientY - state.pointerStart.y);
+        if (dx > 6 || dy > 6) state.pointerMoved = true;
+      });
+
+      dom.mapViewport.addEventListener("pointerup", () => {
+        window.setTimeout(() => {
+          state.pointerStart = null;
+        }, 0);
+      });
+
+      dom.mapTables.forEach(el => {
+        el.addEventListener("click", () => {
+          if (state.pointerMoved) return;
+          const table = el.getAttribute("data-table");
+          if (!table) return;
+          selectTable(table, { zoom: false });
+        });
+
+        el.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            const table = el.getAttribute("data-table");
+            if (table) selectTable(table, { zoom: true });
+          }
+        });
+      });
+    }
+
+    function initPanzoom() {
+      if (!ENABLE_PANZOOM) {
+        state.mapReady = true;
+        return;
+      }
+
+      if (!window.Panzoom) {
+        console.warn("Panzoom did not load. Map will remain static.");
+        state.mapReady = true;
+        return;
+      }
+
+      state.panzoom = Panzoom(dom.mapPanzoom, {
+        maxScale: 5,
+        minScale: 0.65,
+        startScale: 0.92,
+        contain: "outside",
+        canvas: true,
+        touchAction: "none"
+      });
+
+      dom.mapViewport.addEventListener("wheel", state.panzoom.zoomWithWheel);
+
+      // Fit map reasonably once layout has settled.
+      window.setTimeout(() => {
+        resetMapView();
+        state.mapReady = true;
+      }, 50);
+    }
+
+    function resetMapView() {
+      if (!state.panzoom) return;
+      state.panzoom.reset({ animate: true });
+      state.panzoom.zoom(0.92, { animate: true });
+    }
+
+    function zoomMapBy(multiplier) {
+      if (!state.panzoom) return;
+      const current = state.panzoom.getScale();
+      const next = current * multiplier;
+      state.panzoom.zoom(next, { animate: true });
+    }
+
+    function zoomToTable(table) {
+      if (!state.panzoom) return;
+      const pos = getTablePosition(table);
+      if (!pos) return;
+
+      const viewportRect = dom.mapViewport.getBoundingClientRect();
+      const svgRect = dom.roomMapSvg.getBoundingClientRect();
+      const viewBox = dom.roomMapSvg.viewBox.baseVal;
+
+      // Convert SVG coordinate to rendered pixel coordinate inside current SVG.
+      const px = ((pos.x - viewBox.x) / viewBox.width) * svgRect.width;
+      const py = ((pos.y - viewBox.y) / viewBox.height) * svgRect.height;
+
+      const targetScale = 2.8;
+      state.panzoom.zoom(targetScale, { animate: true });
+
+      window.setTimeout(() => {
+        const x = (viewportRect.width / 2) - (px * targetScale);
+        const y = (viewportRect.height / 2) - (py * targetScale);
+        state.panzoom.pan(x, y, { animate: true });
+      }, 80);
+    }
+
+    async function loadCsv() {
+      try {
+        const response = await fetch("attendees.csv", {
+          headers: { "Accept": "text/csv" }
+        });
+        if (!response.ok) {
+          throw new Error("Could not load attendees.csv (HTTP " + response.status + ")");
+        }
+        const text = await response.text();
+        state.guests = parseCsv(text);
+
+        state.tableCounts = {};
+        state.guests.forEach(g => {
+          const key = (g.table || "").trim();
+          if (!key) return;
+          state.tableCounts[key] = (state.tableCounts[key] || 0) + 1;
+        });
+
+        state.loaded = true;
+        buildTableDropdown(state.guests);
+        render();
+      } catch (err) {
+        console.error(err);
+        dom.errorMessage.style.display = "block";
+        dom.errorMessage.textContent =
+          "There was a problem loading the guest list. Please let a member of the event team know.";
+        dom.activeFilter.textContent = "Guest list unavailable.";
+        dom.results.innerHTML = "";
+      }
+    }
+
+    function normalizeForSearch(str) {
+      return (str || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/['’`]/g, "")
+        .replace(/[^a-z0-9\s]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function parseCsvRows(text) {
+      const rows = [];
+      let row = [];
+      let cell = "";
+      let inQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const next = text[i + 1];
+
+        if (char === '"') {
+          if (inQuotes && next === '"') {
+            cell += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (char === "," && !inQuotes) {
+          row.push(cell.trim());
+          cell = "";
+        } else if ((char === "\n" || char === "\r") && !inQuotes) {
+          if (char === "\r" && next === "\n") i++;
+          row.push(cell.trim());
+          if (row.some(value => value.length > 0)) rows.push(row);
+          row = [];
+          cell = "";
+        } else {
+          cell += char;
+        }
+      }
+
+      row.push(cell.trim());
+      if (row.some(value => value.length > 0)) rows.push(row);
+      return rows;
+    }
+
+    function parseCsv(text) {
+      const rows = parseCsvRows(text);
+      if (rows.length < 2) return [];
+
+      const headers = rows[0].map(h => h.trim());
+      const indexMap = {};
+      headers.forEach((h, i) => {
+        indexMap[h.toLowerCase()] = i;
+      });
+
+      function idx(label) {
+        const key = label.toLowerCase();
+        return key in indexMap ? indexMap[key] : -1;
+      }
+
+      const firstIdx = idx(CSV_HEADERS.FIRST_NAMES);
+      const lastIdx = idx(CSV_HEADERS.LAST_NAME);
+      const companyIdx = idx(CSV_HEADERS.COMPANY);
+      const tableIdx = idx(CSV_HEADERS.TABLE);
+
+      const guests = [];
+
+      for (let i = 1; i < rows.length; i++) {
+        const cols = rows[i];
+
+        const firstNames = firstIdx >= 0 ? (cols[firstIdx] || "") : (cols[0] || "");
+        const lastName   = lastIdx  >= 0 ? (cols[lastIdx]  || "") : (cols[1] || "");
+        const company    = companyIdx >= 0 ? (cols[companyIdx] || "") : (cols[2] || "");
+        const table      = tableIdx >= 0 ? (cols[tableIdx] || "") : (cols[3] || "");
+
+        if (!firstNames && !lastName && !company && !table) continue;
+
+        const guest = { firstNames, lastName, company, table };
+        guest._search = normalizeForSearch(`${firstNames} ${lastName} ${company}`);
+        guests.push(guest);
+      }
+
+      guests.sort((a, b) => {
+        const lastCmp = a.lastName.localeCompare(b.lastName, undefined, { sensitivity: "base" });
+        if (lastCmp !== 0) return lastCmp;
+        return a.firstNames.localeCompare(b.firstNames, undefined, { sensitivity: "base" });
+      });
+
+      return guests;
+    }
+
+    function buildTableDropdown(guests) {
+      const tables = Array.from(
+        new Set(
+          guests
+            .map(g => (g.table || "").trim())
+            .filter(t => t.length > 0)
+        )
+      );
+
+      const allNumeric = tables.every(t => /^-?\d+$/.test(t));
+      if (allNumeric) {
+        tables.sort((a, b) => Number(a) - Number(b));
+      } else {
+        tables.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base", numeric: true }));
+      }
+
+      for (const table of tables) {
+        const opt = document.createElement("option");
+        opt.value = table;
+        opt.textContent = table;
+        dom.tableSelect.appendChild(opt);
+      }
+    }
+
+    function setMode(mode) {
+      if (mode === state.mode) return;
+      state.mode = mode;
+
+      if (mode === "search") {
+        dom.modeSearchBtn.classList.add("active");
+        dom.modeTableBtn.classList.remove("active");
+        dom.modeSearchBtn.setAttribute("aria-selected", "true");
+        dom.modeTableBtn.setAttribute("aria-selected", "false");
+        dom.searchPanel.style.display = "";
+        dom.tablePanel.style.display = "none";
+        dom.searchInput.focus();
+      } else {
+        dom.modeTableBtn.classList.add("active");
+        dom.modeSearchBtn.classList.remove("active");
+        dom.modeTableBtn.setAttribute("aria-selected", "true");
+        dom.modeSearchBtn.setAttribute("aria-selected", "false");
+        dom.searchPanel.style.display = "none";
+        dom.tablePanel.style.display = "none";
+      }
+
+      if (mode === "table") {
+        state.searchTerm = "";
+        dom.searchInput.value = "";
+      }
+
+      render();
+    }
+
+    function selectTable(table, options = {}) {
+      setMode("table");
+      state.selectedTable = String(table);
+      dom.tableSelect.value = String(table);
+      render();
+
+      if (options.zoom) {
+        window.setTimeout(() => zoomToTable(String(table)), 80);
+      }
+    }
+
+    function getFilteredGuests() {
+      if (!state.loaded) return [];
+
+      if (state.mode === "search") {
+        const term = normalizeForSearch(state.searchTerm);
+        if (!term) return [];
+        return state.guests.filter(g => g._search.includes(term));
+      } else {
+        const table = (state.selectedTable || "").trim();
+        if (!table) return [];
+        return state.guests.filter(g => (g.table || "").toLowerCase() === table.toLowerCase());
+      }
+    }
+
+    function getTablePosition(table) {
+      const match = TABLE_POSITIONS.find(([num]) => String(num) === String(table));
+      if (!match) return null;
+      return { table: match[0], x: match[1], y: match[2] };
+    }
+
+    function updateMapHighlight() {
+      if (!dom.roomMapWrapper || !dom.mapTables) return;
+
+      const isTableMode = state.mode === "table";
+      const table = (state.selectedTable || "").trim();
+
+      if (!isTableMode) {
+        dom.roomMapWrapper.style.display = "none";
+        dom.mapTables.forEach(el => el.classList.remove("active"));
+        if (dom.tableSummary) dom.tableSummary.textContent = "";
+        return;
+      }
+
+      dom.roomMapWrapper.style.display = "";
+
+      dom.mapTables.forEach(el => {
+        const isActive = table && el.getAttribute("data-table") === table;
+        el.classList.toggle("active", !!isActive);
+      });
+
+      if (dom.tableSummary) {
+        if (table) {
+          const count = state.tableCounts[table] || 0;
+          const label = count === 1 ? "1 guest" : `${count} guests`;
+          dom.tableSummary.textContent = `Table ${table} (${label})`;
+        } else {
+          dom.tableSummary.textContent = "Tap a table on the map to view its guests.";
+        }
+      }
+    }
+
+    function render() {
+      if (!state.loaded) {
+        dom.activeFilter.textContent = "Loading guest list…";
+        dom.results.innerHTML = "";
+        if (dom.searchTip) dom.searchTip.style.display = "none";
+        updateMapHighlight();
+        return;
+      }
+
+      const isSearchMode = state.mode === "search";
+      const searchTermNormalized = normalizeForSearch(state.searchTerm);
+      const hasQuery = isSearchMode
+        ? searchTermNormalized.length > 0
+        : (state.selectedTable || "").trim().length > 0;
+
+      if (dom.clearSearchBtn) {
+        dom.clearSearchBtn.style.display = (searchTermNormalized.length > 0 && isSearchMode) ? "flex" : "none";
+      }
+
+      if (isSearchMode) {
+        if (hasQuery && state.searchTerm) {
+          dom.activeFilter.textContent = `Filter: “${state.searchTerm}”`;
+        } else {
+          dom.activeFilter.textContent = "";
+        }
+      } else {
+        dom.activeFilter.textContent = "";
+      }
+
+      if (!hasQuery) {
+        dom.results.innerHTML = isSearchMode
+          ? '<div class="empty-state">Begin by typing a first name, last name, or company.</div>'
+          : '<div class="empty-state">Tap any table on the map above to see who is seated there.</div>';
+
+        if (dom.searchTip) dom.searchTip.style.display = "none";
+        updateMapHighlight();
+        return;
+      }
+
+      const guests = getFilteredGuests();
+
+      if (guests.length === 0) {
+        dom.results.innerHTML = isSearchMode
+          ? '<div class="empty-state">No results found. Please check the spelling or try a different name or company.</div>'
+          : '<div class="empty-state">No guests found for this table.</div>';
+
+        if (dom.searchTip) dom.searchTip.style.display = "none";
+        updateMapHighlight();
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+
+      guests.forEach(g => {
+        const wrapper = document.createElement("article");
+        wrapper.className = "result-item";
+
+        const nameEl = document.createElement("div");
+        nameEl.className = "result-name";
+        nameEl.textContent = `${g.firstNames} ${g.lastName}`.trim();
+
+        const companyEl = document.createElement("div");
+        companyEl.className = "result-company";
+        companyEl.textContent = g.company || "—";
+
+        const tableEl = document.createElement("button");
+        tableEl.className = "result-table table-link";
+        tableEl.textContent = `TABLE ${g.table || "TBC"}`;
+        tableEl.setAttribute("data-table", g.table);
+        tableEl.type = "button";
+
+        wrapper.appendChild(nameEl);
+        wrapper.appendChild(companyEl);
+        wrapper.appendChild(tableEl);
+        fragment.appendChild(wrapper);
+      });
+
+      dom.results.innerHTML = "";
+      dom.results.appendChild(fragment);
+
+      const tableLinks = dom.results.querySelectorAll(".table-link");
+      tableLinks.forEach(btn => {
+        btn.addEventListener("click", () => {
+          const table = btn.getAttribute("data-table");
+          if (!table || table === "TBC") return;
+          selectTable(table, { zoom: true });
+        });
+      });
+
+      if (dom.searchTip) {
+        dom.searchTip.style.display = (isSearchMode && guests.length > 0) ? "block" : "none";
+      }
+
+      updateMapHighlight();
+    }
+  </script>
+</body>
+</html>

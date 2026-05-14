@@ -620,6 +620,13 @@
       pointerStart: null
     };
 
+    const DEFAULT_VIEWBOX = {
+      x: 0,
+      y: 0,
+      width: 1200,
+      height: 1200
+    };
+
     const dom = {};
 
     // Accurate flat map based on the supplied room diagram.
@@ -850,11 +857,22 @@
       }, 50);
     }
 
+    function setMapViewBox(x, y, width, height) {
+      dom.roomMapSvg.setAttribute("viewBox", `${x} ${y} ${width} ${height}`);
+    }
+
     function resetMapView() {
+      // Reset the SVG viewBox first. This is the true “home” position.
+      setMapViewBox(
+        DEFAULT_VIEWBOX.x,
+        DEFAULT_VIEWBOX.y,
+        DEFAULT_VIEWBOX.width,
+        DEFAULT_VIEWBOX.height
+      );
+
       if (!state.panzoom) return;
 
-      // Avoid Panzoom's animated reset here. Animated pan/zoom can leave the
-      // internal state out of sync after user gestures, especially on SVGs.
+      // Then clear any user-applied Panzoom transform.
       state.panzoom.zoom(1, { animate: false });
       state.panzoom.pan(0, 0, { animate: false, relative: false });
     }
@@ -894,24 +912,26 @@
       const pos = getTablePosition(table);
       if (!pos) return;
 
-      // Clear any manual pan/zoom first so this always behaves predictably.
+      // Clear any manual Panzoom transform first. The actual search-result zoom
+      // is handled by the SVG viewBox below, which is more predictable.
       if (state.panzoom) {
         state.panzoom.zoom(1, { animate: false });
         state.panzoom.pan(0, 0, { animate: false, relative: false });
       }
 
-      // Instead of asking Panzoom to calculate a target pan, change the SVG viewBox.
-      // This is much more reliable: we are literally cropping the SVG around the
-      // selected table, while leaving Panzoom ready for the user to pinch/drag after.
       const viewportRect = dom.mapViewport.getBoundingClientRect();
       const viewportAspect = viewportRect.width / viewportRect.height;
 
-      const zoomLevel = 2.8;
-      let viewWidth = DEFAULT_VIEWBOX.width / zoomLevel;
-      let viewHeight = viewWidth / viewportAspect;
+      // Smaller number = less zoom. Larger number = more zoom.
+      const zoomLevel = 3.2;
 
-      // Safety for unusually narrow/tall screens.
-      if (viewHeight > DEFAULT_VIEWBOX.height) {
+      let viewWidth;
+      let viewHeight;
+
+      if (viewportAspect >= 1) {
+        viewWidth = DEFAULT_VIEWBOX.width / zoomLevel;
+        viewHeight = viewWidth / viewportAspect;
+      } else {
         viewHeight = DEFAULT_VIEWBOX.height / zoomLevel;
         viewWidth = viewHeight * viewportAspect;
       }
@@ -919,9 +939,13 @@
       let viewX = pos.x - (viewWidth / 2);
       let viewY = pos.y - (viewHeight / 2);
 
-      // Clamp so the viewBox never moves outside the room/map bounds.
-      viewX = Math.max(DEFAULT_VIEWBOX.x, Math.min(viewX, DEFAULT_VIEWBOX.width - viewWidth));
-      viewY = Math.max(DEFAULT_VIEWBOX.y, Math.min(viewY, DEFAULT_VIEWBOX.height - viewHeight));
+      const minX = DEFAULT_VIEWBOX.x;
+      const minY = DEFAULT_VIEWBOX.y;
+      const maxX = DEFAULT_VIEWBOX.x + DEFAULT_VIEWBOX.width - viewWidth;
+      const maxY = DEFAULT_VIEWBOX.y + DEFAULT_VIEWBOX.height - viewHeight;
+
+      viewX = Math.max(minX, Math.min(viewX, maxX));
+      viewY = Math.max(minY, Math.min(viewY, maxY));
 
       setMapViewBox(viewX, viewY, viewWidth, viewHeight);
     }
@@ -1104,13 +1128,23 @@
     }
 
     function selectTable(table, options = {}) {
+      const tableString = String(table);
+
       setMode("table");
-      state.selectedTable = String(table);
-      dom.tableSelect.value = String(table);
+      state.selectedTable = tableString;
+      dom.tableSelect.value = tableString;
       render();
 
       if (options.zoom) {
-        window.setTimeout(() => zoomToTable(String(table)), 80);
+        // Wait until table mode has rendered and the map is visible before changing the SVG viewBox.
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            zoomToTable(tableString);
+            if (dom.roomMapWrapper) {
+              dom.roomMapWrapper.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+          });
+        });
       }
     }
 
